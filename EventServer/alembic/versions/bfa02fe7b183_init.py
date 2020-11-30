@@ -1,16 +1,20 @@
-"""baseline
+"""init
 
-Revision ID: d49dc6a12bb4
+Revision ID: bfa02fe7b183
 Revises: 
-Create Date: 2020-11-30 22:17:03.864826
+Create Date: 2020-11-30 22:49:13.596479
 
 """
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
+from sqlalchemy.orm import sessionmaker
+
+Session = sessionmaker()
+
 # revision identifiers, used by Alembic.
-revision = 'd49dc6a12bb4'
+revision = 'bfa02fe7b183'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -46,15 +50,21 @@ def upgrade():
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('detections',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('ts', sa.DateTime(), nullable=True),
+    sa.Column('ts', sa.DateTime(), nullable=False),
     sa.Column('hubId', sa.Integer(), nullable=False),
     sa.Column('objectId', sa.Integer(), nullable=False),
     sa.Column('distance', sa.Numeric(), nullable=False),
     sa.ForeignKeyConstraint(['hubId'], ['hubs.id'], ),
-    sa.ForeignKeyConstraint(['objectId'], ['objects.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.ForeignKeyConstraint(['objectId'], ['objects.id'], )
     )
+    # Initialize create_hypertable TimescaleDB option
+    bind = op.get_bind()
+    session = Session(bind=bind)
+    q = """
+    SELECT create_hypertable('detections', 'ts');
+    """
+    session.execute(q)
+    # ### end Alembic commands ###
     # ### end Alembic commands ###
 
 
