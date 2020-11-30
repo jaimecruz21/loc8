@@ -28,7 +28,7 @@ objects = Table(
     'objects', meta,
     Column('id', Integer, primary_key=True),
     Column('objectId', String(80), nullable=False),
-    Column('deviceId', ForeignKey('devices'), nullable=False),
+    Column('deviceId', ForeignKey('devices.id'), nullable=False),
     Column('name', String(100), nullable=True),
     Column('metadata', JSONB, nullable=True)
 )
@@ -37,9 +37,9 @@ hubs = Table(
     'hubs', meta,
     Column('id', Integer, primary_key=True),
     Column('hubId', String(80), nullable=False),
-    Column('deviceId', ForeignKey('devices'), nullable=False),
+    Column('deviceId', ForeignKey('devices.id'), nullable=False),
     Column('name', String(100), nullable=True),
-    #Column('mapId', ForeignKey('maps'), nullable=False),
+    #Column('mapId', ForeignKey('maps.id'), nullable=False),
     Column('metadata', JSONB, nullable=True)
 )
 

@@ -10,8 +10,8 @@ detections = Table(
     'detections', meta,
     Column('id', Integer, primary_key=True),
     Column('ts', DateTime),
-    Column('hubId', ForeignKey('hubs'), nullable=False),
-    Column('objectId', ForeignKey('objects'), nullable=False),
+    Column('hubId', ForeignKey('hubs.id'), nullable=False),
+    Column('objectId', ForeignKey('objects.id'), nullable=False),
     Column('distance', Numeric, nullable=False)
 )
 
