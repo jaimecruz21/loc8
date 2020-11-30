@@ -1,0 +1,11 @@
+postgres:
+  database: eserver
+  user: eserver
+  password: password
+  host: localhost
+  port: 5438
+  minsize: 1
+  maxsize: 5
+
+host: 127.0.0.1
+port: 8080
