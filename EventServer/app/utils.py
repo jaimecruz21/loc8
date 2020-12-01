@@ -15,4 +15,5 @@ TRAFARET = T.Dict({
         }),
     T.Key('host'): T.IP,
     T.Key('port'): T.Int(),
+    T.Key('jwt_secret'): T.String()
 })
