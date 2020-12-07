@@ -1,6 +1,6 @@
 from aiohttp import web
 
-from .handlers import websocket_handler
+from .handlers_core import websocket_handler
 
 routes = [
     web.get('/ws', websocket_handler),
