@@ -21,7 +21,7 @@ def plugin_app(app, prefix, nested):
 
 def setup_subapps(app):
     plugin_app(app, '/api/v1', api_app)
-    plugin_app(app, '/ws', communication_app)
+    plugin_app(app, '/communication', communication_app)
 
 
 async def init_app(argv=None):

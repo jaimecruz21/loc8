@@ -1,11 +1,12 @@
 postgres:
-  database: test_aiohttpdemo_polls
-  user: test_aiohttpdemo_user
-  password: aiohttpdemo_pass
+  database: test_eserver
+  user: eserver
+  password: password
   host: localhost
-  port: 5432
+  port: 5438
   minsize: 1
   maxsize: 5
 
 host: 127.0.0.1
 port: 8080
+jwt_secret: secret

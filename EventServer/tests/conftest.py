@@ -1,16 +1,15 @@
 import pytest
 
-from src.main import init_app
-from src.settings import BASE_DIR, get_config
-from init_db import (
+from app.main import init_app
+from app.settings import BASE_DIR, get_config
+from app.init_db import (
     setup_db,
     teardown_db,
     create_tables,
-    sample_data,
     drop_tables
 )
 
-TEST_CONFIG_PATH = BASE_DIR / 'config' / 'polls_test.yaml'
+TEST_CONFIG_PATH = BASE_DIR / 'config' / 'test.yaml'
 
 
 @pytest.fixture
@@ -31,6 +30,5 @@ def db():
 @pytest.fixture
 def tables_and_data():
     create_tables()
-    sample_data()
     yield
     drop_tables()
