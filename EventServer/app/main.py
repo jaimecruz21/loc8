@@ -4,9 +4,24 @@ import sys
 from aiohttp import web
 
 from app.db import close_pg, init_pg
-from app.middlewares import setup_middlewares
 from app.routes import setup_routes
 from app.settings import get_config
+
+from app.api_app.app import app as api_app
+from app.communication.app import app as communication_app
+
+
+def plugin_app(app, prefix, nested):
+    async def set_db(a):
+        nested['db'] = a['db']
+
+    app.on_startup.append(set_db)
+    app.add_subapp(prefix, nested)
+
+
+def setup_subapps(app):
+    plugin_app(app, '/api/v1', api_app)
+    plugin_app(app, '/ws', communication_app)
 
 
 async def init_app(argv=None):
@@ -20,8 +35,7 @@ async def init_app(argv=None):
 
     # setup views and routes
     setup_routes(app)
-
-    setup_middlewares(app)
+    setup_subapps(app)
 
     return app
 

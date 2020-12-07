@@ -11,7 +11,5 @@ async def scenario_one(session):
     d = FormData()
     for key, value in data.items():
         d.add_field(key, value)
-    async with session.post(_API) as resp:
-        res = await resp.json()
-        assert res["result"] == "OK"
-        assert resp.status == 200
+    async with session.post(_API, data=d) as resp:
+        assert resp.status == 201

@@ -46,7 +46,7 @@ class DetectionView(web.View):
         :param data:
         :return:
         """
-        token_data = self.decode_token(data['token'])
+        token_data = self.request['jwt_data']
         detection = dict(
             hubId=token_data['hubId'],
             objectId=data['uuid'],
@@ -66,25 +66,5 @@ class DetectionView(web.View):
             return providen_distance
         env = await get_device_env(data['uuid'], conn)
         return 10**((data['rxpower']-data['rssi'])/10/env)
-
-
-    def decode_token(self, token):
-        """
-        Will be moved to authentication middleware
-        :param token:
-        :return:
-        """
-        app = self.request.app
-        try:
-            data = jwt.decode(
-                token,
-                app['config']['jwt_secret'],
-                algorithms=['HS256']
-            )
-            if 'hubId' not in data:
-                raise web.HTTPClientError()
-            return data
-        except jwt.DecodeError:
-            raise web.HTTPClientError()
 
 
