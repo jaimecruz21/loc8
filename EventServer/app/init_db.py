@@ -25,7 +25,7 @@ def admin_db_url(config):
     )
 
 
-def setup_db(config):
+def setup_db(config, override=False):
 
     db_name = config['database']
     db_user = config['user']
@@ -34,12 +34,17 @@ def setup_db(config):
     admin_engine = create_engine(ADMIN_DB_URL, isolation_level='AUTOCOMMIT')
 
     conn = admin_engine.connect()
-    conn.execute("DROP DATABASE IF EXISTS %s" % db_name)
-    #conn.execute("DROP ROLE IF EXISTS %s" % db_user)
-    #conn.execute("CREATE USER %s WITH PASSWORD '%s'" % (db_user, db_pass))
-    conn.execute("CREATE DATABASE %s ENCODING 'UTF8'" % db_name)
-    conn.execute("GRANT ALL PRIVILEGES ON DATABASE %s TO %s" %
-                 (db_name, db_user))
+    if override:
+        conn.execute("DROP DATABASE IF EXISTS %s" % db_name)
+        conn.execute("CREATE DATABASE %s ENCODING 'UTF8'" % db_name)
+        conn.execute("GRANT ALL PRIVILEGES ON DATABASE %s TO %s" %
+                     (db_name, db_user))
+    else:
+        conn.execute(f"""
+        SELECT 'CREATE DATABASE {db_name}' 
+        WHERE NOT EXISTS 
+        (SELECT FROM pg_database WHERE datname = '{db_name}')
+        """)
     conn.close()
 
 
@@ -55,7 +60,6 @@ def teardown_db(config):
       WHERE pg_stat_activity.datname = '%s'
         AND pid <> pg_backend_pid();""" % db_name)
     conn.execute("DROP DATABASE IF EXISTS %s" % db_name)
-    #conn.execute("DROP ROLE IF EXISTS %s" % db_user)
     conn.close()
 
 
@@ -66,4 +70,8 @@ def create_tables(engine=test_engine):
 def drop_tables(engine=test_engine):
     meta.drop_all(bind=engine)
 
+
+if __name__ == '__main__':
+    config = get_config(['-c', USER_CONFIG_PATH.as_posix()])
+    setup_db(config['postgres'])
 

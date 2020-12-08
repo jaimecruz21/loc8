@@ -22,7 +22,7 @@ async def cli(loop, test_client, db):
 def db():
     test_config = get_config(['-c', TEST_CONFIG_PATH.as_posix()])
 
-    setup_db(test_config['postgres'])
+    setup_db(test_config['postgres'], override=True)
     yield
     teardown_db(test_config['postgres'])
 

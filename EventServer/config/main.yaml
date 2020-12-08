@@ -1,6 +1,6 @@
 postgres:
-  database: eserver
-  user: eserver
+  database: eserver2
+  user: postgres
   password: password
   host: localhost
   port: 5438

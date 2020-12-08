@@ -15,5 +15,9 @@ async def authorize(data, ws=None, app=None, **kwargs):
 
 
 @ws_handler(command='subscribe', authorized=False)
-async def subscribe(data, **kwargs):
-    pass
+async def subscribe(data, app=None, ws=None, **ctx):
+    bus = app['message_bus']
+    hub_id = data['hubId']
+    bus.subscribe(ws, hub_id)
+    ws.send_str(json.dumps(dict(command='subscribe', **data)))
+

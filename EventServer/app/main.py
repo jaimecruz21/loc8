@@ -3,6 +3,7 @@ import sys
 
 from aiohttp import web
 from .event_bus import EventBus
+from app.init_db import setup_db
 
 from app.db import close_pg, init_pg
 from app.routes import setup_routes
@@ -46,6 +47,7 @@ async def init_app(argv=None):
 
 def main(argv):
     logging.basicConfig(level=logging.DEBUG)
+
 
     app = init_app(argv)
 
