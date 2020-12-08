@@ -23,3 +23,8 @@ Run application::
     $ python -m app
 
 
+Migrations
+__________
+Create migration:
+```bash
+```

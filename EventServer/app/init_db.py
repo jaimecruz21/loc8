@@ -40,11 +40,8 @@ def setup_db(config, override=False):
         conn.execute("GRANT ALL PRIVILEGES ON DATABASE %s TO %s" %
                      (db_name, db_user))
     else:
-        conn.execute(f"""
-        SELECT 'CREATE DATABASE {db_name}' 
-        WHERE NOT EXISTS 
-        (SELECT FROM pg_database WHERE datname = '{db_name}')
-        """)
+        print(db_name)
+        conn.execute(f"CREATE DATABASE {db_name} ENCODING 'UTF8'")
     conn.close()
 
 
@@ -73,5 +70,6 @@ def drop_tables(engine=test_engine):
 
 if __name__ == '__main__':
     config = get_config(['-c', USER_CONFIG_PATH.as_posix()])
+    print(config['postgres']['database'])
     setup_db(config['postgres'])
 

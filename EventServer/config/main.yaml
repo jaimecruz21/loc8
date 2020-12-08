@@ -1,5 +1,5 @@
 postgres:
-  database: eserver2
+  database: eserver
   user: postgres
   password: password
   host: localhost
