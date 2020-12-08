@@ -11,17 +11,14 @@ DEFAULT_ALGS = ('HS256', )
 
 
 def JWTMiddleware(
-    secret_key,
+    backend,
     auth_scheme='Bearer',
-    algorithms=DEFAULT_ALGS,
-    audience=None,
-    issuer=None,
     request_property='jwt_data',
 
 ):
-    if not (secret_key and isinstance(secret_key, str)):
+    if not (backend):
         raise RuntimeError(
-            'secret key should be provided for correct work',
+            'backend should be provided for correct work',
         )
 
     @web.middleware
@@ -53,17 +50,9 @@ def JWTMiddleware(
             if not isinstance(token, bytes):
                 token = token.encode()
 
-            try:
-                decoded = jwt.decode(
-                    token,
-                    secret_key,
-                    algorithms=algorithms,
-                    audience=audience,
-                    issuer=issuer
-                )
-            except jwt.InvalidTokenError as exc:
-                logger.exception(exc, exc_info=exc)
-                msg = 'Invalid authorization token, ' + str(exc)
+            decoded = backend.validate(token)
+            if not decoded:
+                msg = 'Invalid authorization token'
                 raise web.HTTPUnauthorized(reason=msg)
 
             request[request_property] = decoded
@@ -73,4 +62,4 @@ def JWTMiddleware(
 
 def setup_middlewares(app):
     app.middlewares.append(validation_middleware)
-    app.middlewares.append(JWTMiddleware(app['config']['jwt_secret']))
+    app.middlewares.append(JWTMiddleware(app['auth_backend']))

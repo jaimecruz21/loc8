@@ -2,6 +2,7 @@ import logging
 import sys
 
 from aiohttp import web
+from .event_bus import EventBus
 
 from app.db import close_pg, init_pg
 from app.routes import setup_routes
@@ -14,6 +15,7 @@ from app.communication.app import app as communication_app
 def plugin_app(app, prefix, nested):
     async def set_db(a):
         nested['db'] = a['db']
+        nested['event_bus'] = a['event_bus']
 
     app.on_startup.append(set_db)
     app.add_subapp(prefix, nested)
@@ -32,6 +34,8 @@ async def init_app(argv=None):
     # create db connection on startup, shutdown on exit
     app.on_startup.append(init_pg)
     app.on_cleanup.append(close_pg)
+
+    app['event_bus'] = EventBus()
 
     # setup views and routes
     setup_routes(app)

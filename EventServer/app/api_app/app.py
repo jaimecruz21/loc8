@@ -1,6 +1,7 @@
 from aiohttp import web
 from app.settings import get_config
 from .middlewares import setup_middlewares
+from app.auth.jwt_backend import JWTClientBackend
 from aiohttp_apispec import setup_aiohttp_apispec
 
 
@@ -14,6 +15,7 @@ def build_app():
     app = web.Application()
     config = get_config()
     app['config'] = config
+    app['auth_backend'] = JWTClientBackend(config['jwt_secret'])
     setup_middlewares(app)
     setup_routes(app)
 

@@ -1,5 +1,6 @@
 import jwt
 import datetime as dt
+import asyncio
 from aiohttp import web
 from aiohttp_apispec import (docs, request_schema)
 from marshmallow import Schema, fields
@@ -34,7 +35,10 @@ class DetectionView(web.View):
         async with self.request.app['db'].acquire() as conn:
             data = await self.process_detection_data(
                 self.request.get('data'), conn)
-            status = await create_detection(data, conn)
+            await asyncio.wait([
+                self.request.app['event_bus'].new_detection(data),
+                create_detection(data, conn)
+            ])
         return web.json_response(status=201)
 
     async def process_detection_data(self, data, conn):

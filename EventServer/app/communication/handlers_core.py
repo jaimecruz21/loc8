@@ -1,6 +1,7 @@
 import asyncio
 import aiohttp
 import json
+from functools import wraps
 from collections import defaultdict
 from aiohttp import web
 
@@ -18,14 +19,25 @@ extractors = {
 }
 
 
-def ws_handler(msg_type=aiohttp.WSMsgType.TEXT, command=''):
+def check_auth(ws):
+    return getattr(ws, 'authorized')
+
+
+def ws_handler(msg_type=aiohttp.WSMsgType.TEXT, command='', authorized=True):
     def wrapper(fn):
         handlers_registry[msg_type][command].append(fn)
-        return fn
+        @wraps
+        async def wrapped(*args, ws=None, **kwargs):
+            if authorized and check_auth(ws) or not authorized:
+                return await fn(*args, **kwargs)
+            else:
+                # TODO: unauthorized request
+                pass
+        return wrapped
     return wrapper
 
 
-async def handle_msg(msg, conn):
+async def handle_msg(msg, conn, app):
     msg_type = msg.type
     extractor = extractors[msg_type]
     if not extractor:
@@ -41,9 +53,9 @@ async def handle_msg(msg, conn):
     if msg_type in handlers_registry and command in handlers_registry[msg_type]:
         handlers = handlers_registry[msg_type][command]
         try:
-            await asyncio.wait(
-                list(map(lambda h: h(data, msg=msg, conn=conn), handlers))
-            )
+            await asyncio.wait(list(map(
+                lambda h: h(data, msg=msg, conn=conn, app=app), handlers
+            )))
         except Exception as e:
             # TODO: errors handling and logging
             pass
@@ -55,6 +67,6 @@ async def websocket_handler(request):
     await ws.prepare(request)
 
     async for msg in ws:
-        await handle_msg(msg, ws)
+        await handle_msg(msg, ws, request.app)
 
     return ws
