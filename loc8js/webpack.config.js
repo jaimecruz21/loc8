@@ -1,6 +1,7 @@
-var HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require("path");
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
-  entry: __dirname + "/src/index.js",
+  entry: __dirname + "/src/dev.js",
   
   output: {
     path: __dirname + '/dist', // Folder to store generated bundle
@@ -13,6 +14,32 @@ module.exports = {
         inject: 'body'
     })
   ],
+  resolve: {
+    modules: [path.resolve(__dirname, "node_modules"), ],
+  },
+  
+  resolveLoader: {
+    modules: ["web_loaders", "web_modules", "node_loaders", "node_modules"],
+  },
+
+  devtool: 'inline-source-map',
+  module: {
+    rules: [
+      {
+      	test: /\.js?$/,
+      	loader: "babel-loader",
+            options: {
+                presets: ["@babel/preset-env", "@babel/preset-react"],
+                //plugins: ['@babel/plugin-transform-runtime'], 
+            }
+      },
+      {
+        test: /\.css$/i,
+        use: ["style-loader", "css-loader"],
+      },
+    ]
+  },
+  
   devServer: {  // configuration for webpack-dev-server
     contentBase: './src/public',  //source of static assets
     port: 7700, // port to run dev-server
