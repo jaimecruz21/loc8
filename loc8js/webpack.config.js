@@ -15,7 +15,10 @@ module.exports = {
     })
   ],
   resolve: {
-    modules: [path.resolve(__dirname, "node_modules"), ],
+    modules: [
+      path.join(__dirname, "src"),
+      path.resolve(__dirname, "node_modules"),
+    ],
   },
   
   resolveLoader: {
@@ -27,14 +30,16 @@ module.exports = {
     rules: [
       {
       	test: /\.js?$/,
-      	loader: "babel-loader",
-            options: {
-                presets: ["@babel/preset-env", "@babel/preset-react"],
-                //plugins: ['@babel/plugin-transform-runtime'], 
-            }
+        loader: "babel-loader",
+        include: path.resolve(__dirname, 'src'),
+        options: {
+          presets: ["@babel/preset-env", "@babel/preset-react"],
+          plugins: ['@babel/plugin-proposal-class-properties'], 
+        }
       },
       {
         test: /\.css$/i,
+        //include: path.resolve(__dirname, 'src'),
         use: ["style-loader", "css-loader"],
       },
     ]
@@ -43,5 +48,5 @@ module.exports = {
   devServer: {  // configuration for webpack-dev-server
     contentBase: './src/public',  //source of static assets
     port: 7700, // port to run dev-server
-} 
+  } 
 }
