@@ -8,6 +8,9 @@ Create Date: 2020-12-01 23:10:31.049412
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
+from sqlalchemy.orm import sessionmaker
+
+Session = sessionmaker()
 
 # revision identifiers, used by Alembic.
 revision = '0387fb37182e'
@@ -56,6 +59,12 @@ def upgrade():
     sa.ForeignKeyConstraint(['deviceId'], ['devices.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
+    bind = op.get_bind()
+    session = Session(bind=bind)
+    q = """
+    SELECT create_hypertable('detections', 'ts');
+    """
+    session.execute(q)
     # ### end Alembic commands ###
 
 
