@@ -1,36 +1,43 @@
-import React, {useState} from 'react';
-import { Button } from 'antd';
-import Loc8 from 'lib';
+import React, {useState, useEffect} from 'react'
+import Loc8 from 'lib'
 
-
-
-const ConnectButton = ({connected, ...props}) => {
-  const btnState = connected ? ['primary', 'Disconnect'] : ['default', 'Connect']
-  const [btnType, btnText] = btnState
-
-  return <Button type={btnType} {...props}>
-    {btnText}
-  </Button>
-
-}
+import AuthForm from './components/authForm'
 
 
 const mainScreen = (props) => {
-  const [connected, setConnected] = useState(false);
+  
+  const [connected, setConnected] = useState(false)
+  const [loc8, setLoc8] = useState()
+  // Initialize loc8
+  useEffect(()=> {
+    const loc8 = Loc8.init({
+      onChangeState: onChangeState
+    });
+    setLoc8(loc8)
+  }, [])
 
-  const onChangeState = (...props) => {
-    console.log('loc8 state changed', props)
+  const onChangeState = ({wsConnection, ...props}) => {
+    console.log('change state', wsConnection, props)
+    const {connected} = wsConnection;
+    setConnected(connected)
   }
 
-  const loc8 = Loc8.init({
-    onChangeState: onChangeState
-  });
-
-  const toggleConnect = () => {
-    connected ? loc8.disconnect() : loc8.connect()
+  const authFormSubmit = ({token, ...props}) => {
+    loc8.authorize(token)
+    !connected && loc8.connect()
   }
 
-  return <ConnectButton connected={connected} onClick={toggleConnect} />
+  const disconnect = () => {
+    connected && loc8.disconnect()
+  }
+
+  return <>
+    <AuthForm
+      onSubmit={authFormSubmit}
+      connected={connected}
+      disconnect={disconnect}
+      />
+  </>
 }
 
 export default mainScreen;
