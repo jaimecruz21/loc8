@@ -39,7 +39,7 @@ class EventBus:
 
     async def new_detection(self, data):
         room = data.get('hubId')
-        await self._room_message(room, data)
+        await self._room_message(room, 'detection', data)
 
     async def _room_message(self, room, command, payload):
         targets = self.rooms[room]

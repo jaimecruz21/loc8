@@ -10,7 +10,6 @@ from .models import create_detection
 
 
 class DetectionRequestSchema(Schema):
-    token = fields.String(required=True)
     uuid = fields.String(required=True)
     distance = fields.Float(required=False)
     major = fields.Integer(required=True)

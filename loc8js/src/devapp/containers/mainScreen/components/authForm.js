@@ -1,28 +1,23 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import { Button, Form, Input} from 'antd';
 
 
-const ConnectButton = ({connected, ...props}) => {
-  const btnState = connected ? ['primary', 'Disconnect'] : ['default', 'Connect']
-  const [btnType, btnText] = btnState
-  return <Button type={btnType} {...props}>
-    {btnText}
-  </Button>
+const DEBUG_DEFAULT_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJodWJJZCI6Imh1YjEifQ.ppV1VeG6VWOLViIJgsZN3ioF65O1c7MRVokB-nH3Fwo'
 
-}
 
 const AuthForm = (props) => {
-  const {onSubmit, connected, disconnect} = props
+  const {onSubmit, connected, disconnect, authorized} = props
   const [form] = Form.useForm()
 
   const onFinish = (values) => {
     onSubmit(values)
   }
   return (
-    <Form form={form} onFinish={onFinish}>
+    <Form form={form} layout={'inline'} onFinish={onFinish}>
       <Form.Item
         name="token"
         label="JWT token"
+        initialValue={DEBUG_DEFAULT_TOKEN}
         rules={[
           {
             required: true,
@@ -33,7 +28,7 @@ const AuthForm = (props) => {
       </Form.Item>
 
       <Form.Item >
-        <Button type="primary" htmlType="submit">
+        <Button type={authorized ? "default" : "primary"} htmlType="submit">
           {connected ? "Authorize" : "Connect"}
         </Button>
       </Form.Item> 

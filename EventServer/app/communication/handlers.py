@@ -5,18 +5,21 @@ TOKEN_KEY = 'token'
 
 
 @ws_handler(command='auth', authorized=False)
-async def authorize(data, ws=None, app=None, **kwargs):
+async def authorize(data, conn=None, app=None, **kwargs):
     token = data.get(TOKEN_KEY)
     is_authorized = app['auth_backend'].validate(token)
-    ws.authorized = is_authorized
+    conn.authorized = is_authorized
     if is_authorized:
-        ws.token = token
-    await ws.send_str(json.dumps(dict(status=is_authorized, **data)))
+        conn.token = token
+    await conn.send_str(json.dumps(dict(
+        command='auth',
+        payload=dict(authorized=bool(is_authorized))
+    )))
 
 
 @ws_handler(command='subscribe', authorized=False)
-async def subscribe(data, app=None, ws=None, **ctx):
-    bus = app['message_bus']
+async def subscribe(data, app=None, conn=None, **ctx):
+    bus = app['event_bus']
     hub_id = data['hubId']
-    bus.subscribe(ws, hub_id)
-    await ws.send_str(json.dumps(dict(command='subscribe', **data)))
+    bus.subscribe(conn, hub_id)
+    await conn.send_str(json.dumps(dict(command='subscribe', payload=data)))

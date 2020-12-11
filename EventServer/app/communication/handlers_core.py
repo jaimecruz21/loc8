@@ -50,11 +50,12 @@ async def handle_msg(msg, conn, app):
         return
 
     command = data.get('command', '') or ''
+    payload = data.get('payload') or {}
     if msg_type in handlers_registry and command in handlers_registry[msg_type]:
         handlers = handlers_registry[msg_type][command]
         try:
             await asyncio.wait(list(map(
-                lambda h: h(data, msg=msg, conn=conn, app=app), handlers
+                lambda h: h(payload, msg=msg, conn=conn, app=app), handlers
             )))
         except Exception as e:
             # TODO: errors handling and logging
