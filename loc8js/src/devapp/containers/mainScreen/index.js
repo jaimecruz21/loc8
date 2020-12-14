@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useLayoutEffect} from 'react'
-import Loc8 from 'lib'
+import Loc8 from 'loc8'
 import {Row, Col, Space} from 'antd'
 import AuthForm from './components/authForm'
 import SubscribeForm from './components/subscribeForm'
