@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Form, Input} from 'antd';
 
 
-const DEFAULT_HUB_ID = 'uuid'
+const DEFAULT_HUB_ID = 'hub1'
 
 const SubscribeForm = (props) => {
   const {onSubmit} = props
