@@ -7,25 +7,28 @@ AIOHTTP service makes communication with beacons
 Preparations
 ------------
 
-Run Postgres-TimescaleDB server::
-
-    $ docker-compose up -d
+Run Postgres-TimescaleDB server:
+```bash
+docker-compose up -d
+```
 
 Run
 ---
 Run application::
-
-    $ pip install -r requirements.txt
-    # init db
-    $ PYTHONPATH=. python app/init_db.py
-    # apply migrations
-    $ PYTHONPATH=. alembic upgrade head
-    $ python -m app
+```bash
+pip install -r requirements.txt
+# init db
+PYTHONPATH=. python app/init_db.py
+# apply migrations
+PYTHONPATH=. alembic upgrade head
+python -m app
+```
 
 
 Migrations
 __________
 Create migration:
+
 ```bash
 PYTHONPATH=. alembic revision -m "migration info" --autogenerate
 PYTHONPATH=. alembic upgrade head
@@ -34,9 +37,7 @@ PYTHONPATH=. alembic upgrade head
 Load test
 _________
 Once you are started the server you can start data filling process
-```
-bash
-```
+```bash
 # please, use this for demo
 molotov tests/load_tests.py -w 1 -d 36000  -p 1 --delay 2
 

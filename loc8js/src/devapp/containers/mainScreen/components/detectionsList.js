@@ -44,15 +44,21 @@ const COLUMNS = [
 ]
 
 const DetectionsList = (props) => {
-  const {hubId, data} = props
+  const {hubId, data, onUnsubscribe} = props; 
+  
+  const handleUnsubscribe = (e) => {
+    e?.preventDefault()
+    onUnsubscribe()
+  }
+
   return (
     <Col md="12">
-      <Row>
+      <Row gutter={[4, 4]}>
         <Col xs="24">
-          {hubId} <Button size="small" type="danger"><CloseCircleOutlined /></Button>
+          {hubId} <Button size="small" type="danger" onClick={handleUnsubscribe}><CloseCircleOutlined /></Button>
         </Col>
       </Row>
-      <Row>
+      <Row gutter={[4, 4]}>
         <Col xs="24">
           <Table columns={COLUMNS} dataSource={data}/>
         </Col>

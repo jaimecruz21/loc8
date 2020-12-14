@@ -9,15 +9,15 @@ class App extends Component{
   render(){
     return(
         <Layout>
-            <Header></Header>
-            <Content >
-              <Row>
-                <Col>
-                  <MainContainer />
-                </Col>
-              </Row>
-            </Content>
-            <Footer></Footer>
+          <Header></Header>
+          <Content >
+            <Row>
+              <Col>
+                <MainContainer />
+              </Col>
+            </Row>
+          </Content>
+          <Footer></Footer>
         </Layout>
     );
   }

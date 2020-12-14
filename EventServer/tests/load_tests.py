@@ -1,12 +1,16 @@
 import random
+import jwt
 from molotov import scenario
 from aiohttp import FormData
 
 
 _API = "http://localhost:8080/api/v1/scanner/detected/"
-TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJodWJJZCI6Imh1YjEifQ.ppV1VeG6VWOLViIJgsZN3ioF65O1c7MRVokB-nH3Fwo'
+ALGORITHM = 'HS256'
+SECRET = 'secret'
 
+TOKENS = [jwt.encode({'hubId': f'hub{i}'}, key=SECRET, algorithm=ALGORITHM).decode() for i in range(1, 10)]
 
+print(TOKENS)
 def gen_data():
     return {
         'minor': random.randrange(10),
@@ -22,6 +26,6 @@ async def scenario_one(session):
     for key, value in gen_data().items():
         d.add_field(key, value)
     async with session.post(_API, data=d, headers=dict(
-        Authorization='Bearer {}'.format(TOKEN)
+        Authorization='Bearer {}'.format(random.choice(TOKENS))
     )) as resp:
         assert resp.status == 201

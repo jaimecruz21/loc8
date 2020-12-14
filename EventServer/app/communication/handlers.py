@@ -23,3 +23,11 @@ async def subscribe(data, app=None, conn=None, **ctx):
     hub_id = data['hubId']
     bus.subscribe(conn, hub_id)
     await conn.send_str(json.dumps(dict(command='subscribe', payload=data)))
+
+
+@ws_handler(command='unsubscribe', authorized=False)
+async def subscribe(data, app=None, conn=None, **ctx):
+    bus = app['event_bus']
+    hub_id = data['hubId']
+    bus.unsubscribe(conn, hub_id)
+    await conn.send_str(json.dumps(dict(command='unsubscribe', payload=data)))
