@@ -1,3 +1,4 @@
+import random
 from molotov import scenario
 from aiohttp import FormData
 
@@ -5,12 +6,20 @@ from aiohttp import FormData
 _API = "http://localhost:8080/api/v1/scanner/detected/"
 TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJodWJJZCI6Imh1YjEifQ.ppV1VeG6VWOLViIJgsZN3ioF65O1c7MRVokB-nH3Fwo'
 
-data = {'minor': 2, 'major': 1, 'rxpower': -69, 'uuid': 'uuid', 'rssi': -69}
+
+def gen_data():
+    return {
+        'minor': random.randrange(10),
+        'major': random.randrange(10),
+        'rxpower': random.randrange(-50, -80, -2),
+        'uuid': 'uuid{}'.format(random.randrange(100, 1000)),
+        'rssi': random.randrange(-50, -80, -2)
+    }
 
 @scenario(weight=40)
 async def scenario_one(session):
     d = FormData()
-    for key, value in data.items():
+    for key, value in gen_data().items():
         d.add_field(key, value)
     async with session.post(_API, data=d, headers=dict(
         Authorization='Bearer {}'.format(TOKEN)
