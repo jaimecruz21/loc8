@@ -9,7 +9,11 @@ from app.devices.models import get_device_env
 from .models import create_detection
 
 
-class DetectionRequestSchema(Schema):
+# default interval in milliseconds
+DEFAULT_INTEVAL = 3000
+
+
+class NewDetectionRequestSchema(Schema):
     uuid = fields.String(required=True)
     distance = fields.Float(required=False)
     major = fields.Integer(required=True)
@@ -18,7 +22,7 @@ class DetectionRequestSchema(Schema):
     rxpower = fields.Integer(required=True)
 
 
-class DetectionView(web.View):
+class NewDetectionView(web.View):
     """
     Storing new detection
     """
@@ -26,7 +30,7 @@ class DetectionView(web.View):
         tags=['detection'],
         summary='View to create detection'
     )
-    @request_schema(DetectionRequestSchema())
+    @request_schema(NewDetectionRequestSchema())
     async def post(self):
         """
         There we do need to create detection entity in database
@@ -69,5 +73,37 @@ class DetectionView(web.View):
             return providen_distance
         env = await get_device_env(data['uuid'], conn)
         return 10**((data['rxpower']-data['rssi'])/10/env)
+
+
+class ListDetectionsRequestSchema(Schema):
+    period = fields.Integer(required=False, default=3000)
+    hubs = fields.List(fields.String, required=True)
+    devices = fields.List(fields.String, required=True)
+
+
+class DeviceDetectionView(web.View):
+    @docs(
+        tags=['detection'],
+        summary='View to get device detection'
+    )
+    @request_schema(ListDetectionsRequestSchema)
+    async def get(self):
+        """get list of device detections over the period"""
+        params = self.request.query
+        hubs = []
+        devices = []
+        interval = params.get('interval') or DEFAULT_INTEVAL
+
+        if 'hubs' in params:
+            hubs.extend(params.getall('hubs'))
+        if 'devices' in params:
+            devices.extend(params.getall('devices'))
+
+        return web.json_response(data=dict(
+            interval=interval,
+            devices=devices,
+            hubs=hubs
+        ), status=200)
+
 
 

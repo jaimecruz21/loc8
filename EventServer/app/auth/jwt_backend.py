@@ -17,7 +17,7 @@ class JWTClientBackend:
         self.issuer = issuer
 
     def validate(self, token):
-        #TODO: can be improved in future with specific requirements.
+        #TODO: has to be improved in future with specific requirements.
         return self.decode_token(token)
 
     def decode_token(self, token):
