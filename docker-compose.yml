@@ -1,0 +1,36 @@
+version: "3.8"
+services:
+  demoapp:
+    image: demoapp
+    build:
+      context: ./loc8js/
+      dockerfile: docker/Dockerfile
+    ports:
+      - "80:80"
+
+  timescaledb:
+    image: timescale/timescaledb:1.7.4-pg12
+    environment:
+      POSTGRES_PASSWORD: "password"
+    ports:
+      - "5438:5432"
+    volumes:
+      - timescaledbbase0:/var/lib/postgresql
+      - timescaledblogs0:/var/log
+
+  EventServer:
+    image: eventserver
+    depends_on: 
+      - timescaledb
+    build:
+      context: ./EventServer/
+      dockerfile: docker/Dockerfile
+    env_file:
+      - event_server.env
+    ports:
+      - "8080:8080"
+
+
+volumes:
+  timescaledblogs0: {}
+  timescaledbbase0: {}

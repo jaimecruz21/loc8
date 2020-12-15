@@ -1,12 +1,12 @@
 postgres:
-  database: eserver
-  user: postgres
-  password: password
-  host: localhost
-  port: 5438
-  minsize: 1
-  maxsize: 5
+  database: ${LOC8_DB_DATABASE}
+  user: ${LOC8_DB_USER}
+  password: ${LOC8_DB_PASSWORD}
+  host: ${LOC8_DB_HOST}
+  port: ${LOC8_DB_PORT}
+  minsize: ${LOC8_DB_MINSIZE}
+  maxsize: ${LOC8_DB_MAXSIZE}
 
-host: 127.0.0.1
-port: 8080
-jwt_secret: secret
+host: ${LOC8_HOST}
+port: ${LOC8_PORT}
+jwt_secret: ${LOC8_JWT_SECRET}

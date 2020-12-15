@@ -8,6 +8,14 @@ import {
 } from './commands'
 
 
+const CALLBACKS = new Set([
+  'onDetectionEvent',
+  'onSubscribeEvent',
+  'onUnsubscribeEvent',
+  'onChangeStateEvent'
+])
+
+
 class Loc8 {
   constructor(){
     // Entry to the app
@@ -24,6 +32,12 @@ class Loc8 {
       [UNSUBSCRIBE_COMMAND]: [this.unsubscribeEvent]
     }
     this.hubSubscriptions = new Set()
+  }
+
+  updateCallbacks = (callbacks) => {
+      Object.keys(callbacks).filter((key)=>CALLBACKS.has(key)).map(
+        (key)=>this[key] = callbacks[key]
+      )
   }
 
   subscribeEvent = (...props) => {

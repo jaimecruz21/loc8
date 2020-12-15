@@ -4,13 +4,13 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const {CleanWebpackPlugin} = require('clean-webpack-plugin')
 
 module.exports = {
-  mode: 'development',
+  // mode: 'development',
   entry: {
     main: __dirname + "/src/dev.js",
   },
   
   output: {
-    path: __dirname + '/dist', // Folder to store generated bundle
+    path: __dirname + '/build', // Folder to store generated bundle
     filename: 'bundle.[contenthash].js',  // Name of generated bundle after build
     publicPath: '/' // public URL of the output directory when referenced in a browser
   },

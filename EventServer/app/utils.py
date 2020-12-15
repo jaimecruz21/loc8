@@ -13,7 +13,7 @@ TRAFARET = T.Dict({
             'minsize': T.Int(),
             'maxsize': T.Int(),
         }),
-    T.Key('host'): T.IP,
+    T.Key('host'): T.String(),
     T.Key('port'): T.Int(),
     T.Key('jwt_secret'): T.String()
 })

@@ -34,13 +34,13 @@ const mainScreen = (props) => {
   useLayoutEffect(()=>{
     // reinitialize links  for loc8 callback. 
     //during render React creates new links for the callback
-    if (loc8) {
-      loc8.onDetectionEvent = onDetectionEvent
-      loc8.onSubscribeEvent = onSubscribeEvent
-      loc8.onUnsubscribeEvent = onUnsubscribeEvent
-      loc8.onChangeStateEvent = onChangeState
-      //loc8.updateCallbacks({onDetectionEvent: onDetectionEvent})
-    }
+    loc8?.updateCallbacks({
+      onDetectionEvent: onDetectionEvent,
+      onSubscribeEvent: onSubscribeEvent,
+      onUnsubscribeEvent: onUnsubscribeEvent,
+      onChangeStateEvent: onChangeState
+
+    })
   })
 
   const onSubscribeEvent = ({command, payload}) => {
