@@ -1,7 +1,7 @@
 import datetime as dt
 from sqlalchemy import (
     Table, Column,
-    String, DateTime, Numeric
+    String, DateTime, Numeric, Index, and_
 )
 
 from app.db_meta import meta
@@ -19,9 +19,26 @@ detections = Table(
     Column('rxpower', Numeric, nullable=False)
 )
 
+Index('detections_index', detections.c.ts.desc(), detections.c.hubId, detections.c.hubId)
+
 
 async def create_detection(data, conn):
     return await conn.execute(detections.insert().values(**data))
+
+
+async def get_detections(conn, hubs=None, devices=None, start=None,
+                         end=None, limit=10000):
+    return await conn.execute(detections.select().where(
+        and_(
+            detections.c.ts >= start, detections.c.ts <= end,
+            detections.c.hubId.in_(hubs),
+            detections.c.objectId.in_(devices)
+        )
+    ).limit(limit))
+    #return await conn.execute(detections.select().limit(limit))
+
+
+
 
 
 tables = [detections]

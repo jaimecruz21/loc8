@@ -1,16 +1,27 @@
 import jwt
 import datetime as dt
 import asyncio
+from decimal import Decimal
 from aiohttp import web
 from aiohttp_apispec import (docs, request_schema)
 from marshmallow import Schema, fields
 
 from app.devices.models import get_device_env
-from .models import create_detection
-
+from .models import create_detection, get_detections
 
 # default interval in milliseconds
 DEFAULT_INTEVAL = 3000
+
+
+def row_dict_converter(row):
+    row = dict(row)
+    for key in row.keys():
+        val = row[key]
+        if isinstance(val, Decimal):
+            row[key] = float(val)
+        elif isinstance(val, dt.datetime):
+            row[key] = val.isoformat()
+    return row
 
 
 class NewDetectionRequestSchema(Schema):
@@ -79,6 +90,7 @@ class ListDetectionsRequestSchema(Schema):
     period = fields.Integer(required=False, default=3000)
     hubs = fields.List(fields.String, required=True)
     devices = fields.List(fields.String, required=True)
+    start = fields.DateTime()
 
 
 class DeviceDetectionView(web.View):
@@ -92,17 +104,32 @@ class DeviceDetectionView(web.View):
         params = self.request.query
         hubs = []
         devices = []
-        interval = params.get('interval') or DEFAULT_INTEVAL
+        detections = []
+        interval = int(params.get('interval') or DEFAULT_INTEVAL)
+        start = params.get('start') or dt.datetime.utcnow() - dt.timedelta(
+            milliseconds=interval)
+        end = start + dt.timedelta(milliseconds=interval)
 
         if 'hubs' in params:
             hubs.extend(params.getall('hubs'))
         if 'devices' in params:
             devices.extend(params.getall('devices'))
 
+        async with self.request.app['db'].acquire() as conn:
+            detections = await get_detections(
+                conn,
+                hubs=hubs,
+                devices=devices,
+                start=start,
+                end=end
+            )
+            detections = list(map(row_dict_converter, await detections.fetchall()))
+
         return web.json_response(data=dict(
             interval=interval,
             devices=devices,
-            hubs=hubs
+            hubs=hubs,
+            detectios=detections
         ), status=200)
 
 

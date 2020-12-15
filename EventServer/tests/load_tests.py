@@ -8,7 +8,7 @@ _API = "http://localhost:8080/api/v1/scanner/detected/"
 ALGORITHM = 'HS256'
 SECRET = 'secret'
 
-TOKENS = [jwt.encode({'hubId': f'hub{i}'}, key=SECRET, algorithm=ALGORITHM).decode() for i in range(1, 10)]
+TOKENS = [jwt.encode({'hubId': f'hub{i}'}, key=SECRET, algorithm=ALGORITHM).decode() for i in range(1, 3)]
 
 print(TOKENS)
 def gen_data():
@@ -16,7 +16,7 @@ def gen_data():
         'minor': random.randrange(10),
         'major': random.randrange(10),
         'rxpower': random.randrange(-50, -80, -2),
-        'uuid': 'uuid{}'.format(random.randrange(100, 1000)),
+        'uuid': 'uuid{}'.format(random.randrange(100, 103)),
         'rssi': random.randrange(-50, -80, -2)
     }
 
