@@ -1,34 +1,39 @@
 import React, {useState, useEffect, useRef} from 'react'
 import {Row, Col} from 'antd'
-import {Map, TileLayer, VectorLayer, Marker} from 'maptalks'
+import MaptalksMap from './components/map'
+import CoordinatesForm from './components/coordinatesForm'
+
 
 const MapScreen = (props) => {
 
-  const [map, setMap] = useState()
-  const mapContainer = useRef(null)
+  const {devices, hubs: defaultHubs} = props
 
-  useEffect(()=>{
-    if (!map && mapContainer) {
-      const map = new Map('maproot',{
-        center:     [180,0],
-        zoom:  4,
-        baseLayer : new TileLayer('base',{
-            urlTemplate:'/images/map.png',
-        }),
-        layers : [
-            new VectorLayer('v', [new Marker([180, 0])])
-        ]
-      })
-      setMap(map)
-    }
-    
-  }, [mapContainer])
+  const [hubs, setHubs] = useState(defaultHubs || [])
+
+  const addHub = (data) => {
+    const {uuid:newUUID} = data
+    setHubs([...hubs.filter((({uuid})=>uuid!=newUUID)), data])
+  }
+
+
   
   return <Row>
-      <Col span={24}>
-        <div ref={mapContainer} id="maproot" style={{height: '400px', width: '100%'}}></div>
-      </Col>
-    </Row>
+    <Col span={24}>
+      <Row>
+        <Col span={24} gutter={[4, 16]}>
+          {/* Forms */}
+          <CoordinatesForm label="Hub" onSubmit={addHub} />
+        </Col>
+      </Row>
+      
+      <Row>
+        <Col span={24}>
+          <MaptalksMap hubs={hubs} devices={devices || []} />
+        </Col>
+      </Row>
+
+    </Col>
+  </Row>
 }
 
 export default MapScreen

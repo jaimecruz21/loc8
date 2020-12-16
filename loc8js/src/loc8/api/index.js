@@ -2,7 +2,7 @@ import axios from 'axios'
 import { SERVER_HOST } from 'constants';
 
 
-export const getSubcriptions = async (token, hubs, devices, interval, start) => {
+export const getSubcriptions = async (token, hubs=[], devices=[], interval=null, start=null) => {
   const headers = {
     Authorization: `Bearer ${token}`
   }

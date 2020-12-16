@@ -10,7 +10,7 @@ SECRET = 'secret'
 
 TOKENS = [jwt.encode({'hubId': f'hub{i}'}, key=SECRET, algorithm=ALGORITHM).decode() for i in range(1, 3)]
 
-print(TOKENS)
+
 def gen_data():
     return {
         'minor': random.randrange(10),

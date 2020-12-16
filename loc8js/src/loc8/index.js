@@ -77,8 +77,9 @@ class Loc8 {
   }
 
   setState = (state) => {
+    const {onChangeStateEvent} = this
     this.state = {...this.state , ...state}
-    this.onChangeStateEvent(this.state)
+    onChangeStateEvent && onChangeStateEvent(this.state)
   }
 
   onChangeWsConnection = (state) => {
@@ -148,6 +149,7 @@ class Loc8 {
 const Loc8lib = {
   init: (params={}) => {
     const app = new Loc8(params)
+    app.connect()
     return app
   }
 }

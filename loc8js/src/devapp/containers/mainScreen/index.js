@@ -3,24 +3,56 @@ import Loc8 from 'loc8'
 import SettingsTab from './settingsTab'
 import Map from './map'
 import {Row, Col, Space, Tabs} from 'antd'
-import AuthForm from './components/authForm'
-import SubscribeForm from './components/subscribeForm'
-import DetectionsList from './components/detectionsList'
 
 
 const {TabPane} = Tabs
+
+const DEBUG_DEFAULT_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJodWJJZCI6Imh1YjEifQ.ppV1VeG6VWOLViIJgsZN3ioF65O1c7MRVokB-nH3Fwo'
+
+
+
+const DEFAULT_HUBS = [
+  {
+    uuid: 'hub1',
+    x: 14,
+    y: 0
+  },
+  {
+    uuid: 'hub2',
+    x: 14,
+    y: 75
+  },
+  {
+    uuid: 'hub3',
+    x: 140,
+    y: 0
+  },
+  {
+    uuid: 'hub4',
+    x: 140,
+    y: 75
+  },
+]
+
+const DEFAULT_HUB_SUBSCRIPTIONS = {}
+DEFAULT_HUBS.map((val)=>{DEFAULT_HUB_SUBSCRIPTIONS[val.uuid]=[]})
+const DEFAULT_DEVICE_SUBSCRIPTIONS = {uuid1: [], uuid2: [], uuid3: []}
+
+
 
 const mainScreen = (props) => {
   
   const [connected, setConnected] = useState(false)
   const [authorized, setAuthorized] = useState(false)
   const [loc8, setLoc8] = useState()
-  const [hubSubscriptions, setHubSubscriptions] = useState({})
+  const [hubSubscriptions, setHubSubscriptions] = useState(DEFAULT_HUB_SUBSCRIPTIONS)
+  const [deviceSubscriptions, setDeviceSubscriptions] = useState(DEFAULT_DEVICE_SUBSCRIPTIONS)
 
   // Initialize loc8
   useEffect(()=> {
     initLoc8()
   }, [])
+
 
   const initLoc8 = () => {
     const loc8 = Loc8.init();
@@ -35,6 +67,10 @@ const mainScreen = (props) => {
     //console.log('is the same callback' , loc8, loc8?.onDetectionEvent === onDetectionEvent)
   }
 
+  const onHubSubscribe = ({uuid}) => {
+    loc8.subscribeHub(uuid)
+  }
+
   useLayoutEffect(()=>{
     // reinitialize links  for loc8 callback. 
     //during render React creates new links for the callback
@@ -45,6 +81,16 @@ const mainScreen = (props) => {
       onChangeStateEvent: onChangeState
     })
   })
+
+  useEffect(()=>{
+    if (connected && !authorized) {
+      loc8?.authorize(DEBUG_DEFAULT_TOKEN)
+    }
+    if (authorized && connected) {-
+      Object.keys(hubSubscriptions).map((uuid)=>onHubSubscribe({uuid}))
+      Object.keys(deviceSubscriptions).map((uuid)=>onDeviceSubscribe({uuid}))
+    }
+  }, [authorized, connected])
 
   const onSubscribeEvent = ({command, payload}) => {
     const {hubId} = payload
@@ -83,22 +129,21 @@ const mainScreen = (props) => {
     connected && loc8.disconnect()
   }
 
-  const onHubSubscribe = ({uuid}) => {
-    loc8.subscribeHub(uuid)
-  }
   const onDeviceSubscribe = ({uuid}) => {
     loc8.subscribeDevice(uuid)
+    const currentDetections = deviceSubscriptions[uuid] || []
+    const newState = {...deviceSubscriptions, [uuid]: [...currentDetections]}
+    setDeviceSubscriptions(newState)
   }
-
   return <>
     <Row gutter={[4, 16]}>
       <Col span={24}>
-        <Tabs defaultActiveKey="map" tabPosition="top">
+        <Tabs defaultActiveKey="settings" tabPosition="top">
           <TabPane tab='Settings' key="settings">
-            <SettingsTab {...{disconnect, connected, authorized, authFormSubmit, onHubSubscribe, onDeviceSubscribe, hubSubscriptions}}/>
+            <SettingsTab {...{disconnect, connected, authorized, authFormSubmit, onHubSubscribe, onDeviceSubscribe, hubSubscriptions, deviceSubscriptions}}/>
           </TabPane>
           <TabPane tab='Map' key="map">
-            <Map />
+            <Map hubs={DEFAULT_HUBS} />
           </TabPane>
         </Tabs>
       </Col>
