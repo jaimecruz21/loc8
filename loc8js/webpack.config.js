@@ -6,7 +6,7 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
  
 
 module.exports = {
-  // mode: 'development',
+  mode: 'development',
   entry: {
     //main: ['babel-polyfill', __dirname + "/src/dev.js"]
     main: __dirname + "/src/dev.js"
@@ -24,8 +24,7 @@ module.exports = {
         inject: 'body'
     }),
     new CleanWebpackPlugin(),
-    new webpack.HotModuleReplacementPlugin(),
-    new BundleAnalyzerPlugin()
+    new webpack.HotModuleReplacementPlugin()
   ],
   resolve: {
     modules: [

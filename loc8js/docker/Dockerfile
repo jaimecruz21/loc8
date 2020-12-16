@@ -4,6 +4,7 @@ COPY package.json /app/package.json
 RUN npm install
 COPY . /app
 RUN npm run build
+RUN rm -rf ./node_modules
 FROM nginx:alpine
 COPY --from=builder /app/build /usr/share/nginx/html
 EXPOSE 80
