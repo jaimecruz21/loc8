@@ -3,6 +3,7 @@ const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const {CleanWebpackPlugin} = require('clean-webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const CopyPlugin = require("copy-webpack-plugin");
  
 
 module.exports = {
@@ -24,7 +25,12 @@ module.exports = {
         inject: 'body'
     }),
     new CleanWebpackPlugin(),
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
+    new CopyPlugin({
+      patterns: [
+        { from: "./src/public", to: "./" },
+      ],
+    }),
   ],
   resolve: {
     modules: [
