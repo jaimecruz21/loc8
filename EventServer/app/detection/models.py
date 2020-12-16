@@ -35,10 +35,5 @@ async def get_detections(conn, hubs=None, devices=None, start=None,
             detections.c.objectId.in_(devices)
         )
     ).limit(limit))
-    #return await conn.execute(detections.select().limit(limit))
-
-
-
-
 
 tables = [detections]

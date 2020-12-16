@@ -9,7 +9,7 @@ const SettingsTab = (props) => {
   const {disconnect, connected, authorized, authFormSubmit, onHubSubscribe, onDeviceSubscribe, hubSubscriptions, } = props
   return <>
     <Row gutter={[4, 16]}>
-      <Col xs="24">
+      <Col span={24}>
         <AuthForm
           onSubmit={authFormSubmit}
           connected={connected}
@@ -19,21 +19,21 @@ const SettingsTab = (props) => {
       </Col>
     </Row>
     <Row gutter={[4, 16]}>
-      <Col xs="8">
+      <Col span={8}>
         {
           connected && authorized ? <SubscribeForm onSubmit={onHubSubscribe} label="HubId" /> : null
         }
       </Col>
-      <Col xs="8">
+      <Col span={8}>
         {
           connected && authorized ? <SubscribeForm onSubmit={onDeviceSubscribe} label="DeviceId" values={{uuid: 'uuid1'}}/> : null
         }
       </Col>
     </Row>
     <Row gutter={[4, 16]}>
-      <Col xs="24">
+      <Col span={24}>
         <Row>
-        {Object.keys(hubSubscriptions).map((hubId)=><Col xs="8" gutter={[4, 4]}><DetectionsList key={hubId} onUnsubscribe={()=>onUnsubscribeHub(hubId)} hubId={hubId} data={hubSubscriptions[hubId]}/></Col>)}
+        {Object.keys(hubSubscriptions).map((hubId)=><Col span={8} gutter={[4, 4]}><DetectionsList key={hubId} onUnsubscribe={()=>onUnsubscribeHub(hubId)} hubId={hubId} data={hubSubscriptions[hubId]}/></Col>)}
         </Row>
       </Col>
     </Row>

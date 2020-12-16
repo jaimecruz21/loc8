@@ -92,7 +92,7 @@ const mainScreen = (props) => {
 
   return <>
     <Row gutter={[4, 16]}>
-      <Col xs="24">
+      <Col span={24}>
         <Tabs defaultActiveKey="map" tabPosition="top">
           <TabPane tab='Settings' key="settings">
             <SettingsTab {...{disconnect, connected, authorized, authFormSubmit, onHubSubscribe, onDeviceSubscribe, hubSubscriptions}}/>

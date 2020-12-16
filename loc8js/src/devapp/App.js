@@ -1,6 +1,5 @@
 import React, { Component} from "react";
 import "./App.css";
-import 'antd/dist/antd.css'; 
 import { Layout, Row, Col,  } from 'antd';
 const { Header, Footer, Content } = Layout;
 import MainContainer from './containers/mainScreen/';
@@ -12,7 +11,7 @@ class App extends Component{
           <Header></Header>
           <Content >
             <Row>
-              <Col>
+              <Col span={24}>
                 <MainContainer />
               </Col>
             </Row>
