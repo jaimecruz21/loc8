@@ -16,7 +16,7 @@ def gen_data():
         'minor': random.randrange(10),
         'major': random.randrange(10),
         'rxpower': random.randrange(-50, -80, -2),
-        'uuid': 'uuid{}'.format(random.randrange(100, 103)),
+        'uuid': 'uuid{}'.format(random.randrange(1, 3)),
         'rssi': random.randrange(-50, -80, -2)
     }
 

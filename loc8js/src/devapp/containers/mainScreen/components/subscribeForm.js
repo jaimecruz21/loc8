@@ -5,7 +5,7 @@ import { Button, Form, Input} from 'antd';
 const DEFAULT_HUB_ID = 'hub1'
 
 const SubscribeForm = (props) => {
-  const {onSubmit} = props
+  const {onSubmit, label, values} = props
   const [form] = Form.useForm()
 
   const onFinish = (values) => {
@@ -15,9 +15,9 @@ const SubscribeForm = (props) => {
   return (
     <Form form={form} layout="inline" onFinish={onFinish}>
       <Form.Item
-        name="hubId"
-        label="Hub Id"
-        initialValue={DEFAULT_HUB_ID}
+        name="uuid"
+        label={label| 'uuid'}
+        initialValue={values && values.uuid? values.uuid : DEFAULT_HUB_ID}
         rules={[
           {
             required: true,
@@ -29,7 +29,7 @@ const SubscribeForm = (props) => {
 
       <Form.Item >
         <Button type="primary" htmlType="submit">
-          Subscribe
+          Subscribe {label}
         </Button>
       </Form.Item>
     </Form>

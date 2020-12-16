@@ -8,4 +8,4 @@ WORKDIR /opt
 COPY requirements.txt  /opt/
 RUN pip install -r requirements.txt
 COPY . /opt/
-ENTRYPOINT ./entrypoint.sh
+ENTRYPOINT "./loadtest.sh"

@@ -1,10 +1,14 @@
 import React, {useState, useEffect, useLayoutEffect} from 'react'
 import Loc8 from 'loc8'
-import {Row, Col, Space} from 'antd'
+import SettingsTab from './settingsTab'
+import Map from './map'
+import {Row, Col, Space, Tabs} from 'antd'
 import AuthForm from './components/authForm'
 import SubscribeForm from './components/subscribeForm'
 import DetectionsList from './components/detectionsList'
 
+
+const {TabPane} = Tabs
 
 const mainScreen = (props) => {
   
@@ -39,7 +43,6 @@ const mainScreen = (props) => {
       onSubscribeEvent: onSubscribeEvent,
       onUnsubscribeEvent: onUnsubscribeEvent,
       onChangeStateEvent: onChangeState
-
     })
   })
 
@@ -80,35 +83,26 @@ const mainScreen = (props) => {
     connected && loc8.disconnect()
   }
 
-  const onHubSubscribe = ({hubId}) => {
-    loc8.subscribeHub(hubId)
+  const onHubSubscribe = ({uuid}) => {
+    loc8.subscribeHub(uuid)
+  }
+  const onDeviceSubscribe = ({uuid}) => {
+    loc8.subscribeDevice(uuid)
   }
 
   return <>
-  <Row gutter={[4, 16]}>
-    <Col xs="24">
-      <AuthForm
-        onSubmit={authFormSubmit}
-        connected={connected}
-        disconnect={disconnect}
-        authorized={authorized}
-      />
-    </Col>
-  </Row>
-  <Row gutter={[4, 16]}>
-    <Col xs="24">
-      {
-        connected && authorized ? <SubscribeForm onSubmit={onHubSubscribe} /> : null
-      }
-    </Col>
-  </Row>
-  <Row gutter={[4, 16]}>
-    <Col xs="24">
-      <Row>
-      {Object.keys(hubSubscriptions).map((hubId)=><Col xs="8" gutter={[4, 4]}><DetectionsList key={hubId} onUnsubscribe={()=>onUnsubscribeHub(hubId)} hubId={hubId} data={hubSubscriptions[hubId]}/></Col>)}
-      </Row>
-    </Col>
-  </Row>
+    <Row gutter={[4, 16]}>
+      <Col xs="24">
+        <Tabs defaultActiveKey="map" tabPosition="top">
+          <TabPane tab='Settings' key="settings">
+            <SettingsTab {...{disconnect, connected, authorized, authFormSubmit, onHubSubscribe, onDeviceSubscribe, hubSubscriptions}}/>
+          </TabPane>
+          <TabPane tab='Map' key="map">
+            <Map />
+          </TabPane>
+        </Tabs>
+      </Col>
+    </Row>
     
   </>
 }

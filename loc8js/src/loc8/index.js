@@ -1,4 +1,4 @@
-import {SERVER_HOST} from 'constants'
+
 import WSConnection from './api/ws'
 import {
   AUTH_COMMAND,
@@ -6,6 +6,8 @@ import {
   DETECTION_COMMAND,
   UNSUBSCRIBE_COMMAND
 } from './commands'
+
+import {getSubcriptions} from './api/'
 
 
 const CALLBACKS = new Set([
@@ -32,6 +34,7 @@ class Loc8 {
       [UNSUBSCRIBE_COMMAND]: [this.unsubscribeEvent]
     }
     this.hubSubscriptions = new Set()
+    this.deviceSubscriptions = new Set()
   }
 
   updateCallbacks = (callbacks) => {
@@ -56,6 +59,10 @@ class Loc8 {
   subscribeHub = (hubId) => {
     this.hubSubscriptions.add(hubId)
     this.sendMessage({command: SUBSCRIBE_COMMAND, payload: {hubId: hubId}})
+  }
+
+  subscribeDevice = (uuid) => {
+    this.deviceSubscriptions.add(uuid)
   }
 
   unsubscribeHub = (hubId) => {
@@ -104,7 +111,6 @@ class Loc8 {
   connect = () => {
     this.connection?.disconnect()
     this.connection = new WSConnection(
-      SERVER_HOST,
       //onConnect
       (...props) => this.onWsConnected(...props),
       //onDisconnect
@@ -130,6 +136,13 @@ class Loc8 {
   disconnect = () => {
     this.connection?.disconnect()
   }
+
+  getSubscribedDetections = async () => {
+    const hubs = Object.keys(this.hubSubscriptions) 
+    const devices = Object.keys(this.deviceSubscriptions)
+    resp = await getSubcriptions(this.clientToken, hubs, devices)
+  }
+  
 }
 
 const Loc8lib = {

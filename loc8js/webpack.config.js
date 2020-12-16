@@ -2,11 +2,14 @@ const path = require("path");
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const {CleanWebpackPlugin} = require('clean-webpack-plugin')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+ 
 
 module.exports = {
   // mode: 'development',
   entry: {
-    main: __dirname + "/src/dev.js",
+    //main: ['babel-polyfill', __dirname + "/src/dev.js"]
+    main: __dirname + "/src/dev.js"
   },
   
   output: {
@@ -22,6 +25,7 @@ module.exports = {
     }),
     new CleanWebpackPlugin(),
     new webpack.HotModuleReplacementPlugin(),
+    new BundleAnalyzerPlugin()
   ],
   resolve: {
     modules: [
@@ -43,7 +47,7 @@ module.exports = {
         include: path.resolve(__dirname, 'src'),
         options: {
           presets: ["@babel/preset-env", "@babel/preset-react"],
-          plugins: ['@babel/plugin-proposal-class-properties'], 
+          plugins: ['@babel/plugin-proposal-class-properties', '@babel/transform-runtime'], 
         }
       },
       {

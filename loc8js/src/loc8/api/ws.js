@@ -1,10 +1,10 @@
-import { COMMUNICATION_WS_URL} from 'constants';
+import { SERVER_HOST, COMMUNICATION_WS_URL} from 'constants';
 
 
 class WsConnection {
 
-  constructor(host, onConnect=null, onDisconnect=null, onMessage=null) {
-    this.url = `ws://${host}/${COMMUNICATION_WS_URL}`
+  constructor(onConnect=null, onDisconnect=null, onMessage=null) {
+    this.url = `ws://${SERVER_HOST}/${COMMUNICATION_WS_URL}`
     this.onConnectCallback = onConnect
     this.onDisconnectCallback = onDisconnect
     this.onMessage = onMessage
