@@ -6,7 +6,10 @@ from aiohttp_apispec import setup_aiohttp_apispec
 
 
 async def cors_handler(request):
-    return web.Response(headers={'Access-Control-Allow-Origin': '*'}, status=200)
+    return web.Response(headers={
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': '*'
+    }, status=200)
 
 
 def setup_routes(app):
