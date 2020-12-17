@@ -5,9 +5,14 @@ from app.auth.jwt_backend import JWTClientBackend
 from aiohttp_apispec import setup_aiohttp_apispec
 
 
+async def cors_handler(request):
+    return web.Response(headers={'Access-Control-Allow-Origin': '*'}, status=200)
+
+
 def setup_routes(app):
     from app.detection.routes import routes as detection_routes
     setup_aiohttp_apispec(app=app, title="Docs", version="v1")
+    app.router.add_route('options', '/{tail:.*}', cors_handler)
     app.router.add_routes(detection_routes)
 
 

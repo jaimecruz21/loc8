@@ -7,7 +7,7 @@ import {
   UNSUBSCRIBE_COMMAND
 } from './commands'
 
-import {getSubcriptions} from './api/'
+import {getDetections} from './api/'
 
 
 const CALLBACKS = new Set([
@@ -98,7 +98,6 @@ class Loc8 {
   }
 
   onMessage = ({command, payload}) => {
-    console.log('incoming message from server', command, payload)
     const {incomingMessageHandlers} = this;
     const handlers = incomingMessageHandlers[command] || []
     // in the future put this to async/await possible
@@ -139,9 +138,10 @@ class Loc8 {
   }
 
   getSubscribedDetections = async () => {
-    const hubs = Object.keys(this.hubSubscriptions) 
-    const devices = Object.keys(this.deviceSubscriptions)
-    resp = await getSubcriptions(this.clientToken, hubs, devices)
+    const hubs = [...this.hubSubscriptions]
+    const devices = [...this.deviceSubscriptions]
+    const resp = await getDetections(this.clientToken, hubs, devices)
+    return resp
   }
   
 }

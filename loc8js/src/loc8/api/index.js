@@ -2,7 +2,7 @@ import axios from 'axios'
 import { SERVER_HOST } from 'constants';
 
 
-export const getSubcriptions = async (token, hubs=[], devices=[], interval=null, start=null) => {
+export const getDetections = async (token, hubs=[], devices=[], interval=null, start=null) => {
   const headers = {
     Authorization: `Bearer ${token}`
   }
@@ -14,6 +14,6 @@ export const getSubcriptions = async (token, hubs=[], devices=[], interval=null,
     qs+=`devices=${val}&`
   })
   
-  const res = await axios.get(`//${SERVER_HOST}/api/v1/detections/?${qs}`, headers=headers)
-  return await res.json()
+  const resp = await axios.get(`//${SERVER_HOST}/api/v1/detections/?${qs}`, {headers:headers})
+  return resp.data.detections
 }

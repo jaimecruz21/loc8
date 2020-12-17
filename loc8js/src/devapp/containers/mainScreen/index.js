@@ -3,40 +3,68 @@ import Loc8 from 'loc8'
 import SettingsTab from './settingsTab'
 import Map from './map'
 import {Row, Col, Space, Tabs} from 'antd'
+import { DEBUG_DEFAULT_TOKEN, PIXELS_PER_METER, HUBS_POSITIONS, DEFAULT_HUBS} from './const'
 
 
 const {TabPane} = Tabs
 
-const DEBUG_DEFAULT_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJodWJJZCI6Imh1YjEifQ.ppV1VeG6VWOLViIJgsZN3ioF65O1c7MRVokB-nH3Fwo'
-
-
-
-const DEFAULT_HUBS = [
-  {
-    uuid: 'hub1',
-    x: 14,
-    y: 0
-  },
-  {
-    uuid: 'hub2',
-    x: 14,
-    y: 75
-  },
-  {
-    uuid: 'hub3',
-    x: 140,
-    y: 0
-  },
-  {
-    uuid: 'hub4',
-    x: 140,
-    y: 75
-  },
-]
+const DEFAULT_X = 14;
 
 const DEFAULT_HUB_SUBSCRIPTIONS = {}
 DEFAULT_HUBS.map((val)=>{DEFAULT_HUB_SUBSCRIPTIONS[val.uuid]=[]})
 const DEFAULT_DEVICE_SUBSCRIPTIONS = {uuid1: [], uuid2: [], uuid3: []}
+
+
+const calcPositionByHubs = (detections) => {
+
+  const meaningDetections = Object.keys(detections).filter((key)=>HUBS_POSITIONS[key]).map((hub)=>{
+    return {...HUBS_POSITIONS[hub], distance: PIXELS_PER_METER * detections[hub]}
+  })
+  const y = meaningDetections.map(({y})=>y).reduce((a, b) => a+ b, 0) / meaningDetections.length
+  
+  const coords = []
+  let calculatedX = DEFAULT_X
+  meaningDetections.map((data)=> {
+    const {x, y, distance } = data
+    if (!coords.length){
+      coords.push(x+distance)
+      coords.push(x-distance)
+    } else {
+      const possible = [x - distance, x + distance]
+      const diffs = {}
+      possible.map((val)=>coords.map((prev)=>{
+        diffs[Math.abs(val-prev)]=[val, prev]
+        diffs[val+prev]=[val, prev]
+      }))
+      const diffKeys = Object.keys(diffs)
+      diffKeys.sort()
+      calculatedX = diffKeys.length && diffKeys[0] ? diffs[diffKeys[0]][0] : DEFAULT_X
+    }
+  })
+
+  console.log('meaning detections',  calculatedX, meaningDetections)
+  return {x: calculatedX, y: y}
+}
+
+
+const detectionsToLocations = (detections) => {
+  const hubsDetections = {}
+  const hubsFound = new Set()
+  detections.map((data) => {
+    const {objectId, distance, hubId} = data
+    if (hubsFound.has(objectId)) {
+      hubsDetections[objectId][hubId] = distance
+    } else {
+      hubsFound.add(objectId)
+      hubsDetections[objectId] = {[hubId]: distance}
+    }
+  })
+
+  return Object.keys(hubsDetections).map((deviceId)=> {
+    const position = calcPositionByHubs(hubsDetections[deviceId])
+    return {uuid: deviceId, ...position}
+  })
+}
 
 
 
@@ -47,6 +75,7 @@ const mainScreen = (props) => {
   const [loc8, setLoc8] = useState()
   const [hubSubscriptions, setHubSubscriptions] = useState(DEFAULT_HUB_SUBSCRIPTIONS)
   const [deviceSubscriptions, setDeviceSubscriptions] = useState(DEFAULT_DEVICE_SUBSCRIPTIONS)
+  const [devicesLocations, setDevicesLocations] = useState([]);
 
   // Initialize loc8
   useEffect(()=> {
@@ -91,6 +120,22 @@ const mainScreen = (props) => {
       Object.keys(deviceSubscriptions).map((uuid)=>onDeviceSubscribe({uuid}))
     }
   }, [authorized, connected])
+
+
+  const getDeviceDetections = async () => {
+    if (!loc8) return
+    const detections = await loc8.getSubscribedDetections()
+    setDevicesLocations(detectionsToLocations(detections))
+  }
+
+
+  useEffect(() => {
+    if (!loc8) return
+    const interval = setInterval(() => {
+      getDeviceDetections()
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [loc8]);
 
   const onSubscribeEvent = ({command, payload}) => {
     const {hubId} = payload
@@ -138,12 +183,12 @@ const mainScreen = (props) => {
   return <>
     <Row gutter={[4, 16]}>
       <Col span={24}>
-        <Tabs defaultActiveKey="settings" tabPosition="top">
+        <Tabs defaultActiveKey="map" tabPosition="top">
           <TabPane tab='Settings' key="settings">
             <SettingsTab {...{disconnect, connected, authorized, authFormSubmit, onHubSubscribe, onDeviceSubscribe, hubSubscriptions, deviceSubscriptions}}/>
           </TabPane>
           <TabPane tab='Map' key="map">
-            <Map hubs={DEFAULT_HUBS} />
+            <Map hubs={DEFAULT_HUBS} devices={devicesLocations}/>
           </TabPane>
         </Tabs>
       </Col>

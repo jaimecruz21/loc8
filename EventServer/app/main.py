@@ -2,12 +2,11 @@ import logging
 import sys
 
 from aiohttp import web
-from .event_bus import EventBus
-from app.init_db import setup_db
 
 from app.db import close_pg, init_pg
 from app.routes import setup_routes
 from app.settings import get_config
+from app.event_bus import EventBus
 
 from app.api_app.app import app as api_app
 from app.communication.app import app as communication_app

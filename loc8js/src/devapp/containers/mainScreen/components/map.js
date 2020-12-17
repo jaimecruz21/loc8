@@ -68,7 +68,6 @@ const MaptalksMap = (props) => {
   useEffect(
     () => {
       const layer =  map?.getLayer(HUBS_LAYER_ID)
-      console.log('hubs', hubs)
       if (!layer) return
       layer.clear()
       layer.addGeometry(hubs.map((val)=>createHub(val)))

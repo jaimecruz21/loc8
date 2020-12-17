@@ -11,6 +11,7 @@ from .models import create_detection, get_detections
 
 # default interval in milliseconds
 DEFAULT_INTEVAL = 3000
+FAKE_DELAY = 1000
 
 
 def row_dict_converter(row):
@@ -107,7 +108,7 @@ class DeviceDetectionView(web.View):
         detections = []
         interval = int(params.get('interval') or DEFAULT_INTEVAL)
         start = params.get('start') or dt.datetime.utcnow() - dt.timedelta(
-            milliseconds=interval)
+            milliseconds=interval + FAKE_DELAY)
         end = start + dt.timedelta(milliseconds=interval)
 
         if 'hubs' in params:
@@ -129,7 +130,8 @@ class DeviceDetectionView(web.View):
             interval=interval,
             devices=devices,
             hubs=hubs,
-            detectios=detections
+            detections=detections,
+            start=start.isoformat()
         ), status=200)
 
 
