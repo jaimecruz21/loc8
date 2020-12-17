@@ -6,6 +6,7 @@ from molotov import scenario
 from aiohttp import FormData
 
 
+#_API = "http://localhost:8080/api/v1/scanner/detected/"
 _API = "http://localhost:8080/api/v1/scanner/detected/"
 ALGORITHM = 'HS256'
 SECRET = 'secret'
