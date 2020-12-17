@@ -11,6 +11,10 @@ async def cors_handler(request):
         'Access-Control-Allow-Headers': '*'
     }, status=200)
 
+async def on_prepare(request, response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = '*'
+
 
 def setup_routes(app):
     from app.detection.routes import routes as detection_routes
@@ -26,7 +30,7 @@ def build_app():
     app['auth_backend'] = JWTClientBackend(config['jwt_secret'])
     setup_middlewares(app)
     setup_routes(app)
-
+    app.on_response_prepare.append(on_prepare)
     return app
 
 app = build_app()
